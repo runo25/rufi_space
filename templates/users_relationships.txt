@@ -1,0 +1,46 @@
+Property Website Application Project for Rework Trainees
+The real estate sector is growing rapidly and so is the complexity of having access to properties at real
+time. There is a need to create a property listing platform that will interface between Property owners,
+agent, and prospective tenants.
+On the platform which is a software system, the Property owners will act as the admins.
+Actors and roles identified by the system
+
+Admin:
+Should be able to:
+1. Create Property
+2. View Property on the System from every admin and agents
+3. Edit Property
+4. Delete Property
+5. Users management
+6. View Appointment Bookings
+7. Property Reviews
+8. Property Status (Available / Sold)
+9. View Wishlist
+10. Manage Agents (Create, Delete, update,)
+10. verify properties posted by agents
+
+- Agent:
+Should be able to:
+1. Login
+2. Create Property
+3. View Property
+4. Edit Property
+5. View Property
+6. View Appointment
+7. View Property Reviews
+8. Property Status (Available / Sold)
+9. View Wishlist
+Note action performed by agents should only apply to only properties posted by the agents
+
+Public Prospective Tenants/ users:
+1. View property List (Rent, Buy or Lease)
+2. View property Details
+3. Book Appointment (User can book multiple Appointments on different properties)
+- Appointment Note
+- Date and Time
+4. View Appointment Page to know if appointment is accepted or rejected, also indicate if appointment
+took place
+5. Create Account & Login
+6. Add to Wishlist and view items added to Wishlist
+7. Give Reviews on property
+Project Duration 2 weeks

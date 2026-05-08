@@ -1,0 +1,34 @@
+// app/(dashboard)/agent/properties/page.tsx
+// Notice there is NO "use client" here. This runs on the Next.js server!
+
+import { cookies } from 'next/headers'; // Next.js built-in feature
+
+export default async function AgentPropertiesPage() {
+  // 1. Get the cookies directly from the Next.js server
+  const cookieStore = cookies();
+  const token = cookieStore.get('token')?.value;
+  const agentId = cookieStore.get('userId')?.value;
+
+  // 2. Fetch the data using the token
+  const res = await fetch(`http://property.reworkstaging.name.ng/v1/properties?agent=${agentId}`, {
+    method: "GET",
+    headers: {
+      'Content-Type': "application/json",
+      'Authorization': `Bearer ${token}` 
+    },
+    // Next.js tip: cache: 'no-store' ensures it fetches fresh data every time
+    cache: 'no-store' 
+  });
+
+  const properties = await res.json();
+
+  // 3. Render the page with the data already there!
+  return (
+    <div>
+      <h1>My Properties</h1>
+      {properties.map(property => (
+        <div key={property.id}>{property.name}</div>
+      ))}
+    </div>
+  );
+}

@@ -1,0 +1,357 @@
+USING TOKEN IN CODE
+
+fetch("http://localhost:3000/data",{
+	body:{ name:"anestin","email":"n@gmail.com"},
+	headers:{
+		'content-type':"application/json",
+		'authorization':"brearer <token>"
+	}
+})
+.then(res=> res.json())
+.then(res=>{
+	console.log(res)
+})
+
+ACTORS
+- MERCHANT
+- AGENT
+- USERS
+
+
+MAIN_URL: http://property.reworkstaging.name.ng/v1
+
+NB: Header tokens are required for accessing most routes
+
+TOKEN 
+  POST /token
+  DESCP To create token to view public properties
+  BODY 
+  {
+	"email":"d@g.com"
+  }
+
+MERCHANT
+
+    GET /merchants
+    DESCP To get all merchant 
+
+    GET /merchants/agents?offset=2&limit=2
+    DESCP To get all the agents under a merchant
+
+    GET /merchants/:merchant_id/wishlist
+    DESCP To all property wishlist for a merchant
+
+    POST /merchants
+    DESCP To create a merchant
+    BODY
+    {
+        "full_name": "Anestin James",
+        "email": "anestinjames@gmail.com",
+        "phone": "1234567890",    
+        "password": "12345678"
+    }
+
+    POST /merchants/agents [TOKEN REQUIRED]
+    DESCP For merchant creating agent
+    BODY
+    {
+        "full_name": "Luthesa Luthor",
+        "company": "Lexcorp",
+        "email": "luthesa@luthorcorp.com",
+        "phone": "0987654567",
+        "password": "12345678"
+    }
+
+    POST /merchants/verify-agent [TOKEN REQUIRED]
+    DESCP  For merchant verifying agent
+    BODY
+    {
+        "agent_id": "12334",
+        "is_verified": true
+    }
+
+
+AGENTS
+
+    GET /agents [TOKEN REQUIRED]
+    DESCP To get all agent
+
+    GET /properties?agent=1233&verified=false&merchant=64b6904111d45559c8840b12 [TOKEN REQUIRED] 
+    DESCP To get all the property under an agent
+
+    GET /agents/:agent_id/wishlist [TOKEN REQUIRED]
+    DESCP To all property wishlist for a merchant
+
+    GET /appointments?agent=123&user=123&page=0&limit=10 [TOKEN REQUIRED]
+    DESCP To all appointments for an agent
+
+    POST /agents [TOKEN REQUIRED]
+    DESCP For creating an agent
+    BODY
+    {
+        "full_name": "Lex Luthor",
+        "company": "Lexcorp",
+        "email": "lex@luthorcorp.com",
+        "phone": "0887654567",
+        "password": "12345678"
+    }
+
+    PUT /agents/:agent_id/resource [TOKEN REQUIRED]
+    DESCP For uploading the agent image
+    BODY
+    {
+        "avatar": "image.png"
+    }
+
+
+PROPERTIES
+
+    GET /properties?agent=:agent_id&verified=true&city=lugbe [TOKEN REQUIRED]
+    DESCP Get all the properties for a particular agent, and exist in lugbe and is verified
+
+    GET /properties/:property_id [TOKEN REQUIRED]
+    DESCP Get the information of a single property
+
+
+    POST /properties [TOKEN REQUIRED]
+    DESCP For creating a property on the system
+    VALUES 
+        payment_plan  => "PER_ANNUM", "MONTHLY", "PER_PLOT", "PER_DAY"
+        type          => "RENT", "LEASE", "SALES"
+        category      => "FLAT", "APPARTMENT", "LAND", "DUPLEX", "WAREHOUSE", "SHOP"
+        property_use  => "RESIDENTIAL", "COMMERCIAL"
+        furnishing    => "FURNISHED", "UNFURNISHED"
+
+    NB: When creating a property as a merchant the agent key should be passed
+    BODY
+    {
+        "name": "Kubwa House",
+        "price": "14,405,000",
+        "country": "NIGERIA",
+        "state": "ABUJA",
+        "city": "Lugbe",
+        "lat": 34.27822,
+        "lng": -118.3455,
+        "address": "No 5, Kaitam road, Lugbe airport Abuja",
+        "description": "5 Bedroom Flat on rotating spool",
+        "category": "FLAT",
+        "total_area": "220 sqm",
+        "property_use": "RESIDENTIAL",
+        "payment_plan": "PER_ANNUM",
+        "type": "RENT",
+        "bedroom":2,
+        "bathroom":4,
+        "toilet":3,
+        "parking_space":1,
+        "furnishing":"FURNISHED",
+        "disclaimer":"Just a simple text for the user",
+        "amenities": [
+            "BEDROOM",
+            "TOILET",
+            "GYM"
+        ],
+        "agent":""
+    }
+
+
+    PUT /properties/:property_id [TOKEN REQUIRED]
+    DESCP For updating a property information
+    {
+        "name": "Kubwa House",
+        "price": "14,405,000",
+        "country": "NIGERIA",
+        "state": "ABUJA",
+        "city": "Lugbe",
+        "lat": 34.27822,
+        "lng": -118.3455,
+        "address": "No 5, Kaitam road, Lugbe airport Abuja",
+        "description": "5 Bedroom Flat on rotating spool",
+        "category": "FLAT",
+        "total_area": "220 sqm",
+        "property_use": "RESIDENTIAL",
+        "payment_plan": "PER_ANNUM",
+        "contract_type": "RENT",
+        "bedroom":2,
+        "bathroom":4,
+        "toilet":3,
+        "parking_space":1,
+        "furnishing":"FURNISHED",
+        "disclaimer":"Just a simple text for the user",
+        "amenities": [
+            "BEDROOM",
+            "TOILET",
+            "GYM"
+        ]
+    }
+
+
+    PUT /properties/:property_id/resource [TOKEN REQUIRED]
+    DESCP Uploading images for a property max 5 images
+    BODY
+    {
+        "images": "image.png",
+        "images": "image.png",
+        "images": "image.png",
+        "images": "image.png",
+        "images": "image.png"
+    }
+
+
+    PUT /properties/:property_id/set-verified [TOKEN REQUIRED]
+    DESCP Set the verified value of the property to true or false
+    BODY
+    {
+        "is_verified":true
+    }
+
+
+    POST /properties/buy [TOKEN REQUIRED]
+    DESCP Buy a property off the platform
+    BODY 
+    {
+       "property_id": "123",
+       "user_id": "345"
+    }
+
+
+    DELETE /properties/:property_id [TOKEN REQUIRED]
+    DESCP For deleting a property information
+
+
+APPOINTMENT
+
+    GET /appointments?agent=:agent_id&completed=true&page=0&limit=10 [TOKEN REQUIRED]
+    DESCP Getting all agents appointment
+
+    POST /appointments [TOKEN REQUIRED]
+    DESCP To create an appointment 
+    BODY
+    {
+        "property_id": "123",
+        "user_id": "123",
+        "date": "10-03-2023",
+        "msg": "I would love to book to inspect the site tomorrow if you dont mind.",
+        "time": {
+            "from": "10 AM",
+            "to": "12 PM"
+        }
+    }
+
+
+    PUT /appointments/:appointment_id [TOKEN REQUIRED]
+    DESCP To update the appointment info
+    BODY
+    {
+        "property_id": "123",
+        "user_id": "123",
+        "date": "10-03-2023",
+        "msg": "I would love to book to inspect the site tomorrow if you dont mind.",
+        "time": {
+            "from": "10 AM",
+            "to": "12 PM"
+        }
+    }
+
+
+    PUT /appointments/:appointment_id/confirm-meeting [TOKEN REQUIRED]
+    DESCP To confirm an appointment
+
+    PUT /appointments/:appointment_id/set-agent-appointment-completion [TOKEN REQUIRED]
+    DESCP To complete an appointment by an agent
+
+
+    PUT /appointments/:appointment_id/set-user-appointment-completion [TOKEN REQUIRED]
+    DESCP To complete an appointment by a user
+
+    DELETE /appointments/:appointment_id [TOKEN REQUIRED]
+    DESCP To delete an appointment
+
+
+USER
+
+    GET /users?limit=5&page=2 [TOKEN REQUIRED]
+    DESCP To get user under an agent or a merchant
+
+    GET /users/:user_id/wishlist [TOKEN REQUIRED]
+    DESCP Getting all the wishlist for a user
+
+    GET /users/:user_id/properties [TOKEN REQUIRED]
+    DESCP Getting all the properties for a user
+
+    POST /users
+    DESCP For creating a user
+    BODY
+    {
+        "first_name": "Bruce",
+        "last_name": "Wayne",
+        "email": "brunce@wayne-industries.com",
+        "phone": "9887654567",
+        "password": "12345678"
+    }
+
+    POST /users/wishlist [TOKEN REQUIRED]
+    DESCP To create a property wishlist for user
+    BODY
+    {
+        "property_id":"123",
+        "user_id":"234"
+    }
+
+    PUT /users/:user_id/resource [TOKEN REQUIRED]
+    DESCP For uploading a user image
+    BODY
+    {
+        "avatar": "image.png"
+    }
+
+
+    PUT /users/:user_id [TOKEN REQUIRED]
+    DESCP For updating a user
+    BODY
+    {
+        "first_name": "Bruce",
+        "last_name": "Wayne"
+    }
+
+
+    DELETE /users/:user_id [TOKEN REQUIRED]
+    DESCP For deleting a user
+
+
+AUTH
+
+    POST /auth/login
+    DESCP To login merchant, agents and users
+    BODY
+    {
+        "email": "jodie59@hotmail.com",
+        "password": "12345678"
+    }
+
+
+REVIEW
+
+    GET /reviews?property_id=:1234&limit=10&page=0 [TOKEN REQUIRED]
+    DESCP Get all the review for a property
+
+    POST /reviews [TOKEN REQUIRED]
+    DESP To create a review for a property
+    BODY
+    {
+        "property_id": "123",
+        "user_id": "345",
+        "text": "The property interiors looks good"
+    }
+
+
+    PUT /reviews/:review_id [TOKEN REQUIRED]
+    DESCP To update a property review
+    BODY
+    {
+
+        "text": "The property was a big scam"
+
+    }
+
+    DELETE /reviews/:review_id [TOKEN REQUIRED]
+    DESCP To delete a property review

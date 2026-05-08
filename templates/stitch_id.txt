@@ -1,0 +1,13 @@
+## Stitch Instructions
+
+Get the images and code for the following Stitch project's screens:
+
+## Project
+Title: Premium Property Platform Landing Page
+ID: 1307745052250968682
+
+## Screens:
+1. Design System
+    ID: asset-stub-assets-074c3a83287147deb71aabfcae2745fd-1777281642097
+
+Use a utility like `curl -L` to download the hosted URLs.
