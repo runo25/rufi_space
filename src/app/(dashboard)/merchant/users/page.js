@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { apiClient } from "@/lib/api-client";
 
 export default function MerchantUsersPage() {
   const { data: session } = useSession();
@@ -17,33 +18,14 @@ export default function MerchantUsersPage() {
 
   const fetchUsers = async () => {
     setLoading(true);
-    try {
-      // API requires pagination for users
-      const res = await fetch(`/api/v1/users?limit=100&page=0`, {
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`
-        }
-      });
+    const { error, data } = await apiClient("users?limit=100&page=0", { session });
 
-      if (!res.ok) {
-        setError("Failed to load users");
-        setLoading(false);
-        return;
-      }
-
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const data = await res.json();
-        setUsers(data.data || []);
-      } else {
-        setError("Invalid response format from server");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("An error occurred while fetching users");
-    } finally {
-      setLoading(false);
+    if (error) {
+      if (error !== "TOKEN_EXPIRED") setError(error);
+    } else {
+      setUsers(data?.data || []);
     }
+    setLoading(false);
   };
 
   return (

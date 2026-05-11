@@ -54,17 +54,16 @@ export default function EditPropertyPage({ params }) {
 
   const fetchPropertyDetails = async () => {
     try {
-      const { error, data } = await apiClient(`properties/${propertyId}`, { session });
-      const propertyData = data?.data || data || {};
-
-      if (!error && propertyData) {
+      const res = await apiClient(`properties/${propertyId}`, { session });
+      
+      if (!res.error && res.data?.data) {
         setFormData({
           ...INITIAL_FORM,
-          ...propertyData,
-          price: propertyData.price?.toString() || ""
+          ...res.data.data,
+          price: res.data.data.price?.toString() || ""
         });
       } else {
-        setError("Failed to load property details. It may not exist or you don't have permission.");
+        setError(res.error || "Failed to load property details. It may not exist or you don't have permission.");
       }
     } catch (err) {
       setError("An error occurred while fetching property details.");
@@ -122,14 +121,14 @@ export default function EditPropertyPage({ params }) {
         price: formData.price.toString() // API expects price as string
       };
 
-      const { error, data } = await apiClient(`properties/${propertyId}`, {
+      const res = await apiClient(`properties/${propertyId}`, {
         method: "PUT",
         session,
         body: JSON.stringify(payload),
       });
 
-      if (error || data?.type !== "SUCCESS") {
-        setError(data?.msg || "Failed to update property.");
+      if (res.error) {
+        setError(res.error || "Failed to update property.");
         setLoading(false);
         return;
       }
@@ -141,21 +140,24 @@ export default function EditPropertyPage({ params }) {
           imageFormData.append("images", img);
         });
 
-        const { error: imgError } = await apiClient(`properties/${propertyId}/resource`, {
+        // Use standard fetch for FormData since apiClient defaults to application/json
+        const imgRes = await fetch(`/api/proxy/properties/${propertyId}/resource`, {
           method: "PUT",
-          session,
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
           body: imageFormData,
-          headers: {},
         });
-
-        if (imgError) {
-          console.warn("Images failed to upload, but property was updated.");
+        
+        if (!imgRes.ok) {
+          const errText = await imgRes.text();
+          console.warn("Images failed to upload, but property was updated.", errText);
         }
       }
 
       setSuccess(true);
       setTimeout(() => {
-        router.push("/agent/properties");
+        router.push("/merchant/properties");
       }, 2000);
     } catch (err) {
       setError("An unexpected error occurred.");
@@ -308,7 +310,7 @@ export default function EditPropertyPage({ params }) {
         </div>
 
         <div className="flex gap-4">
-          <Button type="button" variant="secondary" onClick={() => router.push("/agent/properties")} className="flex-1">
+          <Button type="button" variant="secondary" onClick={() => router.push("/merchant/properties")} className="flex-1">
             CANCEL
           </Button>
           <Button type="submit" className="flex-2 bg-primary text-on-primary hover:bg-tertiary-fixed hover:text-primary transition-colors py-4 text-lg" disabled={loading}>

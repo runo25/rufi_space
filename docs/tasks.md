@@ -13,26 +13,26 @@
   - [x] Add review submission form for logged-in users (`POST /reviews`).
 
 ## 🕵️ Agent Capabilities
-- [ ] **Property Management**
-  - [ ] Implement Edit Property functionality for own properties.
+- [x] **Property Management**
+  - [x] Implement Edit Property functionality for own properties.
   - [ ] Implement Property Status toggle (Available / Sold) (`POST /properties/buy` or Edit).
-- [ ] **Appointments**
-  - [ ] View appointments for their specific properties (`GET /appointments?agent=...`).
+- [x] **Appointments**
+  - [x] View appointments for their specific properties (`GET /appointments?agent=...`).
   - [ ] Add actions to accept/complete appointments (`PUT /appointments/:id/set-agent-appointment-completion`).
-- [ ] **Wishlist & Reviews**
-  - [ ] View own Wishlist (`GET /agents/:agent_id/wishlist`).
+- [x] **Wishlist & Reviews**
+  - [x] View own Wishlist (`GET /agents/:agent_id/wishlist`).
   - [ ] View Property Reviews for own properties.
 
 ## 👑 Merchant (Admin) Capabilities
-- [ ] **Property Management**
-  - [ ] Implement Edit Property functionality.
+- [x] **Property Management**
+  - [x] Implement Edit Property functionality.
   - [ ] Implement Delete Property functionality (`DELETE /properties/:property_id`).
-  - [ ] **Verify** properties posted by agents (`PUT /properties/:property_id/set-verified`).
+  - [x] **Verify** properties posted by agents (`PUT /properties/:property_id/set-verified`).
   - [ ] Change Property Status (Available / Sold).
 - [ ] **User & Agent Management**
   - [ ] Agents: Manage list (Create, Delete, Update, Verify: `POST /merchants/verify-agent`).
   - [ ] Users: View user list (`GET /users`) and Delete users (`DELETE /users/:user_id`).
-- [ ] **Appointments & Reviews**
-  - [ ] View all appointment bookings system-wide.
-  - [ ] View all reviews system-wide.
-  - [ ] View Merchant Wishlist (`GET /merchants/:merchant_id/wishlist`).
+- [x] **Appointments & Reviews**
+  - [x] View all appointment bookings system-wide.
+  - [x] View all reviews system-wide.
+  - [x] View Merchant Wishlist (`GET /merchants/:merchant_id/wishlist`).

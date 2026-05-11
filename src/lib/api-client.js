@@ -11,6 +11,10 @@ export async function apiClient(path, options = {}) {
     ...fetchOptions.headers,
   };
 
+  if (fetchOptions.body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   if (session?.accessToken) {
     headers["Authorization"] = `Bearer ${session.accessToken}`;
   }
