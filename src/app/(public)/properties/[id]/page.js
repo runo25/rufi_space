@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Home, Bed, Bath, LayoutDashboard, CheckSquare } from "lucide-react";
+import PropertyGallery from "@/components/PropertyGallery";
 
 export default async function PropertyDetailsPage({ params }) {
   const { id } = await params;
@@ -45,29 +46,7 @@ export default async function PropertyDetailsPage({ params }) {
       </div>
 
       {/* Main Image Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-16 h-[600px]">
-        <div className="md:col-span-3 relative h-full bg-surface-variant hairline-all">
-          <Image
-            src={images[0]}
-            alt={property.name}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        <div className="hidden md:flex flex-col gap-gutter h-full">
-          {images.slice(1, 3).map((img, i) => (
-            <div key={i} className="relative h-1/2 bg-surface-variant hairline-all">
-              <Image src={img} alt={`${property.name} view ${i + 2}`} fill className="object-cover" />
-            </div>
-          ))}
-          {images.length < 2 && (
-            <div className="relative h-1/2 bg-surface-variant hairline-all flex items-center justify-center text-on-surface-variant font-label-caps">
-              NO ADDITIONAL IMAGES
-            </div>
-          )}
-        </div>
-      </div>
+      <PropertyGallery images={images} propertyName={property.name} />
 
       {/* Details Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-16">

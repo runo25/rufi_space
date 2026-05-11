@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+
 const BASE_URL = "http://property.reworkstaging.name.ng/v1";
 
 // As per class project requirements: Admin ID and Credentials via ENV
@@ -33,14 +35,37 @@ export async function getPublicToken() {
 }
 
 export async function fetchProperties(searchParams = {}) {
-  const token = await getPublicToken();
+  // Use auth() for server-side session. This will be null on the client.
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e) {
+    // auth() might fail if called in a client environment where it's not supported
+  }
+  
+  const token = session?.accessToken || await getPublicToken();
   
   if (!token) {
-    throw new Error("Unable to authenticate with public API");
+    console.error("Unable to authenticate: No public or user token found.");
+    return [];
   }
 
-  const params = { ...searchParams };
-  // The backend API does not support merchant=... for properties route
+  const params = { 
+    merchant: MERCHANT_ID,
+    ...searchParams
+  };
+
+  // If user is an AGENT, we inject their ID IF they are in a dashboard context.
+  // Since we can't easily know the context here, we'll only inject it if 
+  // 'agent' is not provided AND 'all' is not provided.
+  if (session?.user?.role === "AGENT" && !params.agent && !params.all) {
+    // Note: In public views, the caller should pass { all: true } to see everything.
+    params.agent = session.user.id;
+  }
+  
+  // Clean up internal flags before sending to backend
+  if (params.all) delete params.all;
+
   const query = new URLSearchParams(params).toString();
   const url = `${BASE_URL}/properties${query ? `?${query}` : ""}`;
 
@@ -53,22 +78,35 @@ export async function fetchProperties(searchParams = {}) {
       next: { revalidate: 60 }
     });
 
-    if (!res.ok) throw new Error("Failed to fetch properties");
-    
-    if (!res.headers.get("content-type")?.includes("application/json")) {
-      throw new Error("Invalid response format");
+    if (!res.ok) {
+      if (res.status === 404) {
+        return []; // Treat 404 as empty list
+      }
+      const errorText = await res.text();
+      console.error(`Backend Error (${res.status}):`, errorText);
+      return [];
     }
+    
     const responseData = await res.json();
-    return responseData.data || [];
+    // Handle both direct array and { data: [...] } formats
+    return responseData.data || responseData || [];
   } catch (error) {
-    console.error(error);
-    return []; // Return empty array on failure
+    console.error("API Fetch Error:", error);
+    return [];
   }
 }
 
 export async function fetchPropertyById(id) {
-  const token = await getPublicToken();
-  if (!token) throw new Error("Unable to authenticate with public API");
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e) {}
+
+  const token = session?.accessToken || await getPublicToken();
+  if (!token) {
+    console.error("Unable to authenticate: No public or user token found.");
+    return null;
+  }
 
   try {
     const res = await fetch(`${BASE_URL}/properties/${id}`, {
@@ -79,14 +117,16 @@ export async function fetchPropertyById(id) {
       next: { revalidate: 60 }
     });
 
-    if (!res.ok) throw new Error("Failed to fetch property details");
-    if (!res.headers.get("content-type")?.includes("application/json")) {
-      throw new Error("Invalid response format");
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`Backend Error (${res.status}):`, errorText);
+      return null;
     }
+    
     const responseData = await res.json();
     return responseData.data || responseData;
   } catch (error) {
-    console.error(error);
+    console.error("API Fetch Error:", error);
     return null;
   }
 }

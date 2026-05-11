@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Input";
 export default async function PropertiesPage({ searchParams }) {
   // Await the searchParams as required in newer Next.js versions if needed
   const params = await searchParams;
-  const properties = await fetchProperties(params);
+  const properties = await fetchProperties({ ...params, all: true });
 
   // Filter properties manually if API doesn't support complex queries, 
   // or pass down queries. The API supports agent, verified, city.

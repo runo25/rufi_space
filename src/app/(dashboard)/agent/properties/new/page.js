@@ -39,6 +39,7 @@ export default function CreatePropertyPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [images, setImages] = useState([]);
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -71,6 +72,9 @@ export default function CreatePropertyPage() {
       // API allows max 5 images
       const selectedFiles = Array.from(e.target.files).slice(0, 5);
       setImages(selectedFiles);
+      if (mainImageIndex >= selectedFiles.length) {
+        setMainImageIndex(0);
+      }
     }
   };
 
@@ -91,7 +95,7 @@ export default function CreatePropertyPage() {
         agent: session.user.id // Pass the logged-in agent's ID
       };
 
-      const res = await fetch("/api/v1/properties", {
+      const res = await fetch("/api/proxy/properties", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,6 +110,7 @@ export default function CreatePropertyPage() {
       }
 
       if (!res.ok || data.type !== "SUCCESS") {
+        console.error("Failed to create property. Backend response:", data);
         setError(data.msg || "Failed to create property.");
         setLoading(false);
         return;
@@ -116,11 +121,20 @@ export default function CreatePropertyPage() {
       // If images are selected, upload them now
       if (propertyId && images.length > 0) {
         const imageFormData = new FormData();
-        images.forEach(img => {
-          imageFormData.append("images", img);
+        
+        // Append main image first
+        if (images[mainImageIndex]) {
+          imageFormData.append("images", images[mainImageIndex]);
+        }
+        
+        // Append the rest
+        images.forEach((img, index) => {
+          if (index !== mainImageIndex) {
+            imageFormData.append("images", img);
+          }
         });
 
-        const imgRes = await fetch(`/api/v1/properties/${propertyId}/resource`, {
+        const imgRes = await fetch(`/api/proxy/properties/${propertyId}/resource`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
@@ -276,9 +290,31 @@ export default function CreatePropertyPage() {
             className="w-full font-body-md text-on-surface file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-label-caps file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
           />
           {images.length > 0 && (
-            <p className="mt-4 text-sm text-on-surface-variant">
-              {images.length} {images.length === 1 ? 'image' : 'images'} selected.
-            </p>
+            <div className="mt-6">
+              <p className="mb-4 font-body-md text-on-surface-variant">
+                Select the main image to display:
+              </p>
+              <div className="flex flex-wrap gap-4">
+                {images.map((img, index) => (
+                  <div 
+                    key={index} 
+                    className={`relative p-1 border-2 cursor-pointer transition-colors ${mainImageIndex === index ? 'border-primary' : 'border-transparent'}`}
+                    onClick={() => setMainImageIndex(index)}
+                  >
+                    <img 
+                      src={URL.createObjectURL(img)} 
+                      alt={`Preview ${index + 1}`} 
+                      className="w-24 h-24 object-cover"
+                    />
+                    {mainImageIndex === index && (
+                      <div className="absolute top-2 left-2 bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded-sm shadow-sm">
+                        MAIN
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 

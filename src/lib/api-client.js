@@ -4,6 +4,7 @@ const BASE_URL = "/api/proxy"; // Use our proxy route
 
 export async function apiClient(path, options = {}) {
   const { session, ...fetchOptions } = options;
+  const merchantId = process.env.NEXT_PUBLIC_MERCHANT_ID;
   
   const headers = {
     "Content-Type": "application/json",
@@ -14,7 +15,14 @@ export async function apiClient(path, options = {}) {
     headers["Authorization"] = `Bearer ${session.accessToken}`;
   }
 
-  const url = `${BASE_URL}/${path.startsWith("/") ? path.slice(1) : path}`;
+  // Automatically inject merchant ID if it's missing from the path
+  let finalPath = path;
+  if (merchantId && !path.includes("merchant=")) {
+    const separator = path.includes("?") ? "&" : "?";
+    finalPath = `${path}${separator}merchant=${merchantId}`;
+  }
+
+  const url = `${BASE_URL}/${finalPath.startsWith("/") ? finalPath.slice(1) : finalPath}`;
 
   try {
     const res = await fetch(url, {
@@ -44,7 +52,11 @@ export async function apiClient(path, options = {}) {
     }
 
     if (!res.ok) {
-      return { error: data?.msg || "Request failed", data };
+      if (res.status === 404) {
+        return { error: null, data: { data: [] } }; // Treat 404 as empty list
+      }
+      console.error(`Client API Error (${res.status}):`, data);
+      return { error: data?.msg || data?.message || "Request failed", data };
     }
 
     return { error: null, data };

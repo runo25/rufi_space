@@ -20,7 +20,7 @@ async function proxy(req, params, method) {
   try {
     // In Next.js 15+, params is a promise
     const resolvedParams = typeof params?.then === 'function' ? await params : params;
-    const pathParts = resolvedParams?.path || [];
+    const pathParts = resolvedParams?.path ||[];
     const path = Array.isArray(pathParts) ? pathParts.join("/") : pathParts;
     
     const url = new URL(req.url);
@@ -31,22 +31,25 @@ async function proxy(req, params, method) {
 
     const headers = new Headers();
     req.headers.forEach((value, key) => {
+      // We strip these out because the target server will reject the proxy's local headers
       if (!["host", "connection", "origin", "referer"].includes(key.toLowerCase())) {
         headers.set(key, value);
       }
     });
     
-    let body;
-    if (method !== "GET" && method !== "HEAD") {
-      body = await req.text();
-    }
-    
-    const res = await fetch(targetUrl, {
+    let fetchOptions = {
       method,
       headers,
-      body,
-      cache: "no-store"
-    });
+      cache: "no-store",
+    };
+
+    if (method !== "GET" && method !== "HEAD") {
+      // Using arrayBuffer() is the ultimate fix. 
+      // It perfectly preserves Image Form-Data and JSON without triggering the 'duplex' crash!
+      fetchOptions.body = await req.arrayBuffer();
+    }
+    
+    const res = await fetch(targetUrl, fetchOptions);
     
     const data = await res.text();
     console.log(`Target responded with ${res.status}`);
