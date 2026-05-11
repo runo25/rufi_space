@@ -72,6 +72,11 @@ export async function fetchProperties(searchParams = {}) {
   const query = new URLSearchParams(params).toString();
   const url = `${BASE_URL}/properties${query ? `?${query}` : ""}`;
 
+  // **DEBUG: Log the exact URL**
+  console.log("Fetching properties from:", url);
+  console.log("  Token present:", !!token);
+  console.log("  Merchant ID:", MERCHANT_ID);
+
   // 4. Error Handling & 404s
   try {
     const res = await fetch(url, {
@@ -94,9 +99,27 @@ export async function fetchProperties(searchParams = {}) {
     
     // 5. Parse and Return
     const responseData = await res.json();
-    return responseData.data || responseData || [];
+    
+    // **DEBUG: Log the raw response on 200 OK**
+    console.log("Vercel Raw 200 Response:", JSON.stringify(responseData, null, 2));
+    
+    // **DEBUG: Check for missing 'data' key**
+    if (responseData.data === undefined && responseData !== undefined) {
+      console.warn("Missing 'data' key in response! Keys found:", Object.keys(responseData));
+      console.warn("Returning entire responseData:", responseData);
+    }
+    
+    const result = responseData.data || responseData || [];
+    console.log("Final properties result count:", Array.isArray(result) ? result.length : "NOT_ARRAY");
+    return result;
   } catch (error) {
-    console.error("API Fetch Error:", error);
+    // **DEBUG: Stop silent catches - log the full error**
+    console.error("API Fetch Error Details:", {
+      message: error.message,
+      stack: error.stack,
+      url: url,
+      tokenPresent: !!token
+    });
     return [];
   }
 }
@@ -112,6 +135,8 @@ export async function fetchPropertyById(id) {
     console.error("Unable to authenticate: No public or user token found.");
     return null;
   }
+
+  console.log("Fetching property details for ID:", id);
 
   try {
     const res = await fetch(`${BASE_URL}/properties/${id}`, {
@@ -129,9 +154,21 @@ export async function fetchPropertyById(id) {
     }
     
     const responseData = await res.json();
-    return responseData.data || responseData;
+    console.log("Property details raw response:", JSON.stringify(responseData, null, 2));
+    
+    if (responseData.data === undefined && responseData !== undefined) {
+      console.warn("Missing 'data' key in property details! Keys found:", Object.keys(responseData));
+    }
+    
+    const result = responseData.data || responseData;
+    console.log("Property details result:", !!result);
+    return result;
   } catch (error) {
-    console.error("API Fetch Error:", error);
+    console.error("API Fetch Error (Property Details):", {
+      message: error.message,
+      stack: error.stack,
+      propertyId: id
+    });
     return null;
   }
 }
@@ -147,6 +184,8 @@ export async function fetchPropertyReviews(propertyId) {
     console.error("Unable to authenticate: No public or user token found.");
     return [];
   }
+
+  console.log("Fetching reviews for property:", propertyId);
 
   try {
     const res = await fetch(`${BASE_URL}/reviews?property_id=${propertyId}&limit=50&page=0`, {
@@ -170,10 +209,19 @@ export async function fetchPropertyReviews(propertyId) {
     const responseData = await res.json();
     console.log("Raw Reviews API Response:", JSON.stringify(responseData, null, 2));
     
+    if (responseData.data === undefined && responseData !== undefined) {
+      console.warn("Missing 'data' key in reviews response! Keys found:", Object.keys(responseData));
+    }
+    
     const extractedData = responseData.data || responseData;
+    console.log("Final reviews count:", Array.isArray(extractedData) ? extractedData.length : "NOT_ARRAY");
     return Array.isArray(extractedData) ? extractedData : [];
   } catch (error) {
-    console.error("API Fetch Error (Reviews):", error);
+    console.error("API Fetch Error (Reviews):", {
+      message: error.message,
+      stack: error.stack,
+      propertyId: propertyId
+    });
     return [];
   }
 }
