@@ -6,7 +6,7 @@ This document outlines the architecture and implementation details for the remai
 - **Framework**: Next.js 15 (App Router)
 - **Styling**: Tailwind CSS v4 (with custom Brutalist theme in `globals.css`)
 - **Authentication**: NextAuth.js v5 (beta) with custom Credentials provider integrating with the external Rework API.
-- **Role-based Access Control**: Enforced via Next.js Middleware (`src/middleware.js`) separating `MERCHANT`, `AGENT`, and `USER` routes.
+- **Role-based Access Control**: Enforced via Next.js Proxy (`src/proxy.js`) separating `MERCHANT`, `AGENT`, and `USER` routes.
 
 ## 2. API Integration Strategy
 All external API calls to `property.reworkstaging.name.ng/v1` are routed directly or via server-side fetches.
