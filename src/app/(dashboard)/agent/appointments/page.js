@@ -65,7 +65,7 @@ export default function AgentAppointmentsPage() {
               {appointments.map(appointment => (
                 <tr key={appointment.id} className="hairline-b hover:bg-surface-container-lowest transition-colors font-body-md text-on-surface">
                   <td className="p-4">
-                    {new Date(appointment.date).toLocaleDateString()} {appointment.time}
+                    {new Date(appointment.date).toLocaleDateString()} {appointment.time?.from} - {appointment.time?.to}
                   </td>
                   <td className="p-4">
                     <div className="font-bold">{appointment.property?.name || "Unknown Property"}</div>

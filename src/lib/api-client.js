@@ -11,13 +11,18 @@ export async function apiClient(path, options = {}) {
     ...fetchOptions.headers,
   };
 
+  if (fetchOptions.body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   if (session?.accessToken) {
     headers["Authorization"] = `Bearer ${session.accessToken}`;
   }
 
-  // Automatically inject merchant ID if it's missing from the path
+  // Automatically inject merchant ID if it's a GET request and missing from the path
   let finalPath = path;
-  if (merchantId && !path.includes("merchant=")) {
+  const method = fetchOptions.method || "GET"; // Default fetch method is GET
+  if (method === "GET" && merchantId && !path.includes("merchant=")) {
     const separator = path.includes("?") ? "&" : "?";
     finalPath = `${path}${separator}merchant=${merchantId}`;
   }

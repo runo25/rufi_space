@@ -44,6 +44,11 @@ export default function Navigation() {
           <Link href="/wishlist" className="nav-item hover:text-primary transition-colors duration-300 uppercase">
             WISHLIST
           </Link>
+          {session?.user?.role?.toUpperCase() === "USER" && (
+            <Link href="/appointments" className="nav-item hover:text-primary transition-colors duration-300 uppercase">
+              APPOINTMENTS
+            </Link>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-6">

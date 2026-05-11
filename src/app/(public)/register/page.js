@@ -28,17 +28,20 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/v1/users", {
+      const res = await fetch("/api/proxy/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
 
       if (!res.ok) {
-        let errorMsg = "Failed to register. Please try again.";
-        if (res.headers.get("content-type")?.includes("application/json")) {
-          const errData = await res.json();
-          errorMsg = errData.msg || errorMsg;
+        let errorMsg = `Failed to register (Status: ${res.status}). Please try again.`;
+        const text = await res.text();
+        try {
+          const errData = JSON.parse(text);
+          errorMsg = errData.msg || errData.message || errorMsg;
+        } catch (parseErr) {
+          if (text) errorMsg = text; // fallback to raw text if not JSON
         }
         setError(errorMsg);
       } else {
