@@ -30,7 +30,7 @@ export default function AgentRegisterPage() {
 
     try {
       // Agents must be created under a merchant — login as our merchant first
-      const loginRes = await fetch("/api/v1/auth/login", {
+      const loginRes = await fetch("/api/proxy/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -55,7 +55,7 @@ export default function AgentRegisterPage() {
       }
 
       // Create agent under our merchant
-      const res = await fetch("/api/v1/merchants/agents", {
+      const res = await fetch("/api/proxy/merchants/agents", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

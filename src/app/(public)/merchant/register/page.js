@@ -29,7 +29,7 @@ export default function AdminRegisterPage() {
 
     try {
       // Using the proxy configured in next.config.mjs
-      const res = await fetch("/api/v1/merchants", {
+      const res = await fetch("/api/proxy/merchants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
