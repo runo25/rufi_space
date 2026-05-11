@@ -32,7 +32,8 @@ async function proxy(req, params, method) {
     const headers = new Headers();
     req.headers.forEach((value, key) => {
       // We strip these out because the target server will reject the proxy's local headers
-      if (!["host", "connection", "origin", "referer"].includes(key.toLowerCase())) {
+      const blockedHeaders = ["host", "connection", "origin", "referer", "content-length", "content-encoding"];
+      if (!blockedHeaders.includes(key.toLowerCase())) {
         headers.set(key, value);
       }
     });

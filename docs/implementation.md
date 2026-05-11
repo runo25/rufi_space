@@ -22,16 +22,28 @@ All external API calls to `property.reworkstaging.name.ng/v1` are routed directl
 - **Appointments**:
   - Implement a booking modal/page for users to book an appointment (`POST /appointments`).
   - Create a User Dashboard (`/user/appointments`) to track booked appointments.
+  - Display appointment statuses clearly (Pending, Accepted, Rejected, Completed).
+- **Property Reviews**:
+  - Add a Review section to the bottom of the Property Details page (`GET /reviews?property_id=...`).
+  - Allow logged-in users to submit a review (`POST /reviews`).
 
-### Merchant & Agent Capabilities
-- **Delete Properties**: Add a delete button in Merchant and Agent dashboards (`DELETE /properties/:property_id`).
-- **Edit Properties (Merchant)**: Allow merchants to edit properties, similar to the existing agent edit functionality.
-- **Manage Appointments**: Add Action buttons to Confirm (`PUT /appointments/:id/confirm-meeting`) or Complete (`PUT /appointments/:id/set-agent-appointment-completion`) appointments.
+### Merchant (Admin) Capabilities
+- **Property Management**: 
+  - Edit Property functionality.
+  - Delete Property functionality (`DELETE /properties/:property_id`).
+  - Verify properties posted by agents (`PUT /properties/:property_id/set-verified`).
+  - Change Property Status (Available / Sold).
+- **User & Agent Management**:
+  - Manage Agents (Create, Delete, Update, View).
+  - Manage Users (View list of users, Delete users).
+- **Manage Appointments**: 
+  - View all appointment bookings.
+  - Add Action buttons to Confirm (`PUT /appointments/:id/confirm-meeting`) or Complete/Reject appointments.
 
-### Property Reviews
-- Add a Review section to the bottom of the Property Details page (`GET /reviews?property_id=...`).
-- Allow logged-in users to submit a review (`POST /reviews`).
-
-## 4. Design Language
-- **Brutalism**: High contrast, uppercase text, strict grid lines (`hairline-all`, `hairline-b`), and limited rounded corners.
-- **Interactions**: GSAP animations used sparingly for impactful reveals and hover states (e.g., `PropertyCard` drift effect).
+### Agent Capabilities
+- **Property Management**: 
+  - Edit own properties.
+  - Change Property Status (Available / Sold) for own properties.
+- **Manage Appointments**: 
+  - View appointments on own properties.
+  - Complete appointments (`PUT /appointments/:id/set-agent-appointment-completion`).

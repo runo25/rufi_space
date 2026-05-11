@@ -1,36 +1,38 @@
-# Task Tracker
+# Task Tracker - Rufi Space
 
-## User Capabilities
-- [ ] **Wishlist**
-  - [ ] Implement `GET /users/:user_id/wishlist` in `/wishlist/page.js`.
-  - [ ] Add "Add to Wishlist" functionality in `properties/[id]/page.js`.
-- [ ] **Appointments**
-  - [ ] Implement booking functionality (`POST /appointments`).
-  - [ ] Create User Dashboard for appointments.
-- [ ] **Reviews**
-  - [ ] Fetch and display reviews on property details page.
-  - [ ] Add review submission form for users.
+## 👤 Public & Prospective Tenants (Users)
+- [x] **Wishlist**
+  - [x] Implement `GET /users/:user_id/wishlist` in `/wishlist/page.js`.
+  - [x] Add "Add to Wishlist" button in `properties/[id]/page.js` (`POST /users/wishlist`).
+- [x] **Appointments**
+  - [x] Create booking modal/form on property details page (`POST /appointments`).
+  - [x] Create User Dashboard (`/user/appointments`) to view appointments.
+  - [x] Display appointment status logically (Pending, Accepted, Rejected, Completed).
+- [x] **Reviews**
+  - [x] Fetch and display reviews on property details page (`GET /reviews?property_id=...`).
+  - [x] Add review submission form for logged-in users (`POST /reviews`).
 
-## Agent Capabilities
+## 🕵️ Agent Capabilities
 - [ ] **Property Management**
-  - [ ] Implement Delete Property functionality.
+  - [ ] Implement Edit Property functionality for own properties.
+  - [ ] Implement Property Status toggle (Available / Sold) (`POST /properties/buy` or Edit).
 - [ ] **Appointments**
-  - [ ] Add actions to accept/complete appointments.
-- [ ] **Wishlist**
-  - [ ] Implement Agent Wishlist view.
+  - [ ] View appointments for their specific properties (`GET /appointments?agent=...`).
+  - [ ] Add actions to accept/complete appointments (`PUT /appointments/:id/set-agent-appointment-completion`).
+- [ ] **Wishlist & Reviews**
+  - [ ] View own Wishlist (`GET /agents/:agent_id/wishlist`).
+  - [ ] View Property Reviews for own properties.
 
-## Merchant Capabilities
+## 👑 Merchant (Admin) Capabilities
 - [ ] **Property Management**
-  - [ ] Implement Delete Property functionality.
   - [ ] Implement Edit Property functionality.
-- [ ] **Appointments**
-  - [ ] Add actions to manage/override appointments.
-- [ ] **Agent Management**
-  - [ ] Add Agent Delete/Update functionality.
-- [ ] **Wishlist**
-  - [ ] Implement Merchant Wishlist view.
-
-## Current Focus
-1. Connect Wishlist to API.
-2. Implement Appointment Booking flow.
-3. Setup User Dashboard.
+  - [ ] Implement Delete Property functionality (`DELETE /properties/:property_id`).
+  - [ ] **Verify** properties posted by agents (`PUT /properties/:property_id/set-verified`).
+  - [ ] Change Property Status (Available / Sold).
+- [ ] **User & Agent Management**
+  - [ ] Agents: Manage list (Create, Delete, Update, Verify: `POST /merchants/verify-agent`).
+  - [ ] Users: View user list (`GET /users`) and Delete users (`DELETE /users/:user_id`).
+- [ ] **Appointments & Reviews**
+  - [ ] View all appointment bookings system-wide.
+  - [ ] View all reviews system-wide.
+  - [ ] View Merchant Wishlist (`GET /merchants/:merchant_id/wishlist`).

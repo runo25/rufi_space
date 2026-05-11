@@ -1,13 +1,17 @@
-import { fetchPropertyById } from "@/lib/api";
+import { fetchPropertyById, fetchPropertyReviews } from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Home, Bed, Bath, LayoutDashboard, CheckSquare } from "lucide-react";
 import PropertyGallery from "@/components/PropertyGallery";
+import WishlistButton from "@/components/WishlistButton";
+import BookAppointmentTrigger from "@/components/BookAppointmentTrigger";
+import PropertyReviews from "@/components/PropertyReviews";
 
 export default async function PropertyDetailsPage({ params }) {
   const { id } = await params;
   const property = await fetchPropertyById(id);
+  const initialReviews = await fetchPropertyReviews(id);
 
   if (!property) {
     notFound();
@@ -104,6 +108,9 @@ export default async function PropertyDetailsPage({ params }) {
               {property.disclaimer}
             </div>
           )}
+
+          {/* Reviews Section */}
+          <PropertyReviews propertyId={property.id} initialReviews={initialReviews} />
         </div>
 
         {/* Sidebar / Action Area */}
@@ -113,18 +120,14 @@ export default async function PropertyDetailsPage({ params }) {
             <p className="font-body-md text-body-md text-on-surface-variant">
               Interested in this {property.category?.toLowerCase() || "property"}? Book an appointment for a private viewing or proceed to acquisition.
             </p>
-            <Link 
-              href={`/login?callbackUrl=/properties/${property.id}&action=book`}
-              className="bg-primary text-on-primary text-center font-label-caps text-label-caps p-4 hover:bg-tertiary-fixed hover:text-primary transition-colors uppercase w-full block"
-            >
-              BOOK APPOINTMENT
-            </Link>
+            <BookAppointmentTrigger propertyId={property.id} />
             <Link 
               href={`/login?callbackUrl=/properties/${property.id}&action=buy`}
               className="bg-transparent text-primary text-center font-label-caps text-label-caps p-4 hairline-all hover:bg-surface-variant transition-colors uppercase w-full block"
             >
               BUY DIRECT
             </Link>
+            <WishlistButton propertyId={property.id} />
           </div>
         </div>
       </div>
